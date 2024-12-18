@@ -42,7 +42,7 @@
     "vite-plugin-dts": "^3.0.0",
     "vite-plugin-svgr": "^4.2.0"
   },
-  "description": "一个模仿 macOS 界面风格的 React 组件库。",
+  "description": "A macOS interface style React component library",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/723386252/react-macos-ui.git"

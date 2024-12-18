@@ -1,57 +1,58 @@
 # React macOS UI
 
-一个模仿 macOS 界面风格的 React 组件库。
+A macOS interface style React component library
 
-## 特性
+Choose your language / 选择语言:
+- English
+- [中文](README.zh.md)
 
-- 🎨 macOS 风格的 UI 组件
-- 🚀 基于 React 和 TypeScript 开发
-- 📦 支持按需引入
-- 🎯 完整的类型定义
-- 💪 使用 styled-components 实现样式
+## FEATURE
 
-## 安装
+- 🎨 macOS style UI components
+- 🚀 Developed with React and TypeScript
+- 📦 Support on-demand introduction
+- 🎯 Complete type definition
+- 💪 More components are coming soon...
+
+## INSTALL
 
 ```bash
 npm install react-macos-ui
 ```
-## 组件
+## COMPONENT
 
-### Window 窗口
+### Window
 
-macOS 风格的窗口组件,支持:
-- 拖拽移动
-- 调整大小
-- 最大化/最小化
-- 关闭按钮
-- 毛玻璃标题栏
+macOS style window widget, supports:
+- Drag and move
+- resize
+- maximize/minimize
+- close
+- window manager
 
-### Dock 程序坞
+### Dock
 
-macOS 风格的 Dock 栏,支持:
-- 底部/左侧/右侧停靠
-- 自动隐藏
-- 图标缩放动画
-- 工具提示
+macOS style Dock bar, support:
+- bottom/left/right Dock
+- auto-hide
+- icon scaling animation
 
-### AppDisplay 应用图标
+### AppDisplay
 
-用于显示应用图标,支持:
-- 自定义图标
-- 点击事件
-- 悬停缩放
-- 活动状态
+display application icons, support:
+- custom icon
+- hover zoom
 
-## 主题
+## Theme
 
-支持亮色和暗色两种主题模式:
+Supports both light and dark theme modes:
 ```tsx
-// 设置暗色主题
+// set dark theme
 <div data-theme="dark">
 <App />
 </div>
 ```
 
-## 许可证
+## License
 
 MIT © [Will Jay]

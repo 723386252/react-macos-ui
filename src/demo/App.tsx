@@ -61,7 +61,6 @@ const DesktopContent = () => {
 
   return (
     <DemoContainer>
-      {/* 使用新的 AppContainer 替换 DesktopGrid */}
       <AppContainer>
         {desktopApps.slice().reverse().map(app => (
           <AppDisplay
@@ -93,7 +92,6 @@ const DesktopContent = () => {
   );
 };
 
-// App 组件现在只负责提供 WindowManager 上下文
 const App = () => {
   return (
     <WindowManager>
