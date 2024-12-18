@@ -6,7 +6,7 @@ Choose your language / 选择语言:
 - English
 - [中文](README.zh.md)
 
-## FEATURE
+## Features
 
 - 🎨 macOS style UI components
 - 🚀 Developed with React and TypeScript
@@ -14,12 +14,12 @@ Choose your language / 选择语言:
 - 🎯 Complete type definition
 - 💪 More components are coming soon...
 
-## INSTALL
+## Install
 
 ```bash
 npm install react-macos-ui
 ```
-## COMPONENT
+## Components
 
 ### Window
 
