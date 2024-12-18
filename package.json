@@ -39,7 +39,8 @@
     "typescript": "^5.0.0",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^3.0.0",
-    "vite-plugin-svgr": "^4.2.0"
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
   },
   "description": "A macOS interface style React component library",
   "repository": {
