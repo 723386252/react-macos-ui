@@ -55,4 +55,4 @@ Supports both light and dark theme modes:
 
 ## License
 
-MIT © [Will Jay]
+MIT © [Will]

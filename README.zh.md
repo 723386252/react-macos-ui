@@ -54,4 +54,4 @@ macOS 风格的 Dock 栏,支持:
 
 ## 许可证
 
-MIT © [Will Jay]
+MIT © [Will]
