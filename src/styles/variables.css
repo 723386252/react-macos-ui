@@ -41,6 +41,9 @@
   --app-display-bg: transparent;
   --app-display-active-bg: rgba(0, 0, 0, 0.1);
   --app-display-hover-bg: rgba(0, 0, 0, 0.05);
+
+    /* 按钮颜色 */
+    --button-icon: #4c4c4c;
 }
 
 /* Dark Theme Variables */
@@ -83,6 +86,8 @@
   --app-display-bg: rgba(255, 255, 255, 0.05);
   --app-display-active-bg: rgba(255, 255, 255, 0.1);
   --app-display-hover-bg: rgba(255, 255, 255, 0.08);
+
+  --button-icon: #ffffff;
 }
 
 /* Constants (不随主题变化) */
