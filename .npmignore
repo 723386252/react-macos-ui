@@ -1,0 +1,11 @@
+src
+public
+.github
+.vscode
+demo
+docs
+test
+*.log
+.DS_Store
+.env
+.env.* 

@@ -1,0 +1,59 @@
+{
+  "name": "react-macos-ui",
+  "version": "1.0.0",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "unpkg": "dist/umd/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "build:lib": "vite build",
+    "dev": "vite",
+    "prepare": "npm run build:lib"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "styled-components": ">=5.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "react": ">=16.8.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": ">=16.8.0",
+    "react-rnd": "^10.4.13",
+    "react-use": "^17.5.1",
+    "styled-components": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^18.19.68",
+    "@types/react": "^18.2.0",
+    "@types/react-dnd": "^3.0.2",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.0.0",
+    "vite-plugin-svgr": "^4.2.0"
+  },
+  "description": "一个模仿 macOS 界面风格的 React 组件库。",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/723386252/react-macos-ui.git"
+  },
+  "keywords": [
+    "react-macos-ui"
+  ],
+  "author": "Will Jay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/723386252/react-macos-ui/issues"
+  },
+  "homepage": "https://github.com/723386252/react-macos-ui#readme"
+}
