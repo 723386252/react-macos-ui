@@ -5,7 +5,7 @@ import {useMouse} from 'react-use';
 
 export interface DockProps {
     position?: 'bottom' | 'left' | 'right';
-    children: React.ReactElement<AppDisplayProps>[];
+    children?: React.ReactElement<AppDisplayProps>[];
     autoHide?: boolean;
     scale?: number;
 }
@@ -73,15 +73,15 @@ const HORIZONTAL_INFLUENCE = 80;
 const VERTICAL_INFLUENCE = 50;
 
 export const Dock: React.FC<DockProps> = ({
-                                              children,
+                                              children = [],
                                               position = 'bottom',
                                               autoHide = false,
                                               scale = 1.4
                                           }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const dockRef = useRef<HTMLDivElement>(null);
-    const containerMouse = useMouse(containerRef);
-    const dockMouse = useMouse(dockRef);
+    const containerMouse = useMouse(containerRef as React.RefObject<Element>);
+    const dockMouse = useMouse(dockRef as React.RefObject<Element>);
     const [isVisible, setIsVisible] = useState(!autoHide);
 
 

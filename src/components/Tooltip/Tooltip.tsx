@@ -63,7 +63,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [position, setPosition] = useState({x: 0, y: 0});
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const timeoutRef = useRef<number>();
+    const timeoutRef = useRef<number | undefined>(undefined);
 
     useEffect(() => {
         if (!wrapperRef.current) return;

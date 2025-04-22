@@ -45,5 +45,13 @@ export default defineConfig({
       }
     },
     sourcemap: false,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
   }
 }); 

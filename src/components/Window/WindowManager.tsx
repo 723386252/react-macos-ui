@@ -1,5 +1,6 @@
-import React, {createContext, useCallback, useContext, useMemo, useRef, useState} from 'react';
-import {Window} from './Window';
+import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import {Window, WindowRef} from './Window';
+import { omit } from 'lodash';
 
 // 定义消息类型
 export interface WindowMessage {
@@ -9,23 +10,35 @@ export interface WindowMessage {
 }
 
 // 定义窗口上下文类型
-interface WindowContext {
+interface WindowContext extends RegisterWindowOptions {
     id: string;
     zIndex: number;
     messageHandlers: Set<(message: WindowMessage) => void>;
     sendMessage: (id: string, message: any) => void;
 }
 
+interface RegisterWindowOptions extends CreateWindowOptions {
+    ref: React.RefObject<WindowRef>;
+}
+
+// 添加返回类型定义
+export interface CreateWindowResult {
+    windowId: string;
+    close: () => void;
+    minimize: (targetElement?: HTMLElement) => void;
+    open: () => void;
+}
+
 interface WindowManagerContextType {
     registerWindow: (
         id: string,
-        onMessage?: (message: WindowMessage) => void
+        options: RegisterWindowOptions
     ) => void;
     unregisterWindow: (id: string) => void;
     focusWindow: (id: string) => void;
     useZIndex: (id: string, providedZIndex?: number) => number;
     sendMessage: (id: string, fromId: string, message: any) => void;
-    createWindow: (options: CreateWindowOptions) => void;
+    createWindow: (options: CreateWindowOptions) => CreateWindowResult;
     focusedWindowId: string | null;
     subscribe: (windowId: string, handler: (message: WindowMessage) => void) => void;
     unsubscribe: (windowId: string, handler: (message: WindowMessage) => void) => void;
@@ -89,19 +102,24 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
                                                                 children,
                                                                 baseZIndex = 1000
                                                             }) => {
-    const contextMap = useRef<Map<string, WindowContext>>(new Map());
-    const [windows, setWindows] = useState<Map<string, CreateWindowOptions>>(new Map());
+    const [contextMap, setContextMap] = useState<Map<string, WindowContext>>(new Map());
+    const contextMapRef = useRef<Map<string, WindowContext>>(new Map());
     const [focusedWindowId, setFocusedWindowId] = useState<string | null>(null);
     const [maxZIndex, setMaxZIndex] = useState<number>(baseZIndex);
 
+    useEffect(() => {
+        contextMapRef.current = contextMap;
+    }, [contextMap]);
+
     // 注册窗口
-    const registerWindow = useCallback((id: string, onMessage?: (message: WindowMessage) => void) => {
+    const registerWindow = useCallback((id: string, options: RegisterWindowOptions) => {
+        const { onMessage } = options;
         const newContext: WindowContext = {
             id,
             zIndex: baseZIndex,
             messageHandlers: new Set(),
             sendMessage: (to: string, message: any) => {
-                const targetContext = contextMap.current.get(to);
+                const targetContext = contextMap.get(to);
                 const messageBody: WindowMessage = {
                     to,
                     from: id,
@@ -113,7 +131,8 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
                         handler(messageBody);
                     });
                 }
-            }
+            },
+            ...omit(options, 'onMessage')
         };
 
         // 如果提供了初始的消息处理函数，添加到 Set 中
@@ -121,17 +140,27 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
             newContext.messageHandlers.add(onMessage);
         }
 
-        contextMap.current.set(id, newContext);
-    }, [baseZIndex]);
+        setContextMap(prev => {
+            const next = new Map(prev);
+            next.set(id, newContext);
+            return next;
+        });
+
+        return newContext;
+    }, [baseZIndex, contextMap]);
 
     // 注销窗口
     const unregisterWindow = useCallback((id: string) => {
-        contextMap.current.delete(id);
-    }, []);
+        setContextMap(prev => {
+            const next = new Map(prev);
+            next.delete(id);
+            return next;
+        });
+    }, [contextMap]);
 
     // 聚焦窗口
     const focusWindow = useCallback((id: string) => {
-        const context = contextMap.current.get(id);
+        const context = contextMap.get(id);
         if (!context) return;
 
         // 更新最大 zIndex 并赋予给当前窗口
@@ -142,65 +171,77 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
         });
 
         setFocusedWindowId(id);
-    }, []);
+    }, [contextMap]);
 
     // 获取窗口 z-index，现在依赖 maxZIndex
     const useZIndex = useCallback((id: string) => {
-        const context = contextMap.current.get(id);
+        const context = contextMap.get(id);
         if (!context) return baseZIndex;
 
         return context.zIndex;
-    }, [baseZIndex, maxZIndex]); // 添加 maxZIndex 依赖
+    }, [baseZIndex, maxZIndex, contextMap]); // 添加 maxZIndex 依赖
 
     // 添加全局发送消息方法
     const sendMessage = useCallback((id: string, fromId: string, message: any) => {
-        const targetContext = contextMap.current.get(fromId);
+        const targetContext = contextMap.get(fromId);
         if (targetContext) {
             targetContext.sendMessage(id, message);
         }
-    }, []);
+    }, [contextMap]);
+
+ 
 
     // 修改 createWindow 函数实现
-    const createWindow = useCallback((options: CreateWindowOptions) => {
+    const createWindow = useCallback((options: CreateWindowOptions): CreateWindowResult => {
         const windowId = Math.random().toString(36).substr(2, 9);
+        const windowRef = React.createRef<WindowRef>();
 
-        // 在创建窗口时就注册
-        registerWindow(windowId, options.onMessage || (() => {
-        }));
+        // 注册窗口
+        registerWindow(windowId, { ref: windowRef as React.RefObject<WindowRef>, ...options });
 
-        setWindows(prev => {
-            const next = new Map(prev);
-            next.set(windowId, {
-                ...options,
-                onClose: () => {
-                    options.onClose?.();
-                    // 在窗口关闭时注销
-                    unregisterWindow(windowId);
-                    setWindows(prev => {
-                        const next = new Map(prev);
-                        next.delete(windowId);
-                        return next;
-                    });
-                }
-            });
-            return next;
-        });
+        const closeWindow = () => {
+            const window = contextMapRef.current.get(windowId);
+            if (window?.ref.current) {
+                window.ref.current.close();
+            }
+        };
+    
+        const minimizeWindow = (targetElement?: HTMLElement) => {
+            const window = contextMapRef.current.get(windowId);
+            if (window?.ref.current) {
+                window.ref.current.minimize(targetElement);
+            }
+        };
+    
+        const openWindow = () => {
+            const window = contextMapRef.current.get(windowId);
+            if (window?.ref.current) {
+                window.ref.current.open();
+            }
+        };
+
+        return {
+            windowId,
+            close: closeWindow,
+            minimize: minimizeWindow,
+            open: openWindow
+        };
     }, [registerWindow, unregisterWindow]);
 
     // 添加订阅和取消订阅的方法
     const subscribe = useCallback((windowId: string, handler: (message: WindowMessage) => void) => {
-        const context = contextMap.current.get(windowId);
+        const context = contextMap.get(windowId);
         if (context) {
             context.messageHandlers.add(handler);
         }
-    }, []);
+    }, [contextMap]);
 
     const unsubscribe = useCallback((windowId: string, handler: (message: WindowMessage) => void) => {
-        const context = contextMap.current.get(windowId);
+        const context = contextMap.get(windowId);
         if (context) {
             context.messageHandlers.delete(handler);
         }
-    }, []);
+    }, [contextMap]);
 
     const value = {
         registerWindow,
@@ -217,10 +258,10 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
     return (
         <WindowManagerContext.Provider value={value}>
             {children}
-            {/* 渲染所有窗口，使用 WindowIdContext.Provider 包裹每个窗口 */}
-            {Array.from(windows.entries()).map(([id, options]) => (
+            {Array.from(contextMap.entries()).map(([id, options]) => (
                 <WindowIdContext.Provider key={id} value={id}>
                     <Window
+                        ref={options.ref}
                         title={options.title}
                         defaultWidth={options.defaultWidth}
                         defaultHeight={options.defaultHeight}
